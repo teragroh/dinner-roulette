@@ -1,0 +1,135 @@
+# Compiled class files
+*.temp
+*.tmp
+# Temporary files
+
+storage/
+upload-dir/
+uploads/
+# Upload directory
+
+# src/main/resources/application-dev.properties
+# src/main/resources/application-local.properties
+# Uncomment these if you have sensitive data in these files
+# Application properties (if containing sensitive data)
+
+Thumbs.db
+.DS_Store
+# OS Files
+
+/.nb-gradle/
+/nbdist/
+/dist/
+/nbbuild/
+/nbproject/private/
+# NetBeans
+
+.vscode/
+# VS Code
+
+bin/
+.settings/
+.project
+.classpath
+# Eclipse
+
+out/
+*.ipr
+*.iml
+*.iws
+.idea/
+# IntelliJ IDEA
+
+build/
+.gradle/
+# Gradle
+
+.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+buildNumber.properties
+dependency-reduced-pom.xml
+release.properties
+pom.xml.next
+pom.xml.versionsBackup
+pom.xml.releaseBackup
+pom.xml.tag
+target/
+# Maven
+
+replay_pid*
+hs_err_pid*
+# Virtual machine crash logs
+
+*.rar
+*.tar.gz
+*.zip
+*.ear
+*.nar
+*.war
+*.jar
+# Package Files
+
+.mtj.tmp/
+# Mobile Tools for Java (J2ME)
+
+*.ctxt
+# BlueJ files
+
+*.log
+# Log files
+
+*.class
+
+# ============================================
+# UI / Frontend (Node.js / React)
+# ============================================
+
+# Dependencies
+ui/node_modules/
+ui/.pnp
+ui/.pnp.js
+
+# Testing
+ui/coverage
+
+# Production
+ui/build
+ui/dist
+
+# Environment files
+ui/.env
+ui/.env.local
+ui/.env.development.local
+ui/.env.test.local
+ui/.env.production.local
+
+# Logs
+ui/npm-debug.log*
+ui/yarn-debug.log*
+ui/yarn-error.log*
+ui/pnpm-debug.log*
+ui/lerna-debug.log*
+
+# Optional npm cache
+ui/.npm
+
+# Optional eslint cache
+ui/.eslintcache
+
+# Optional stylelint cache
+ui/.stylelintcache
+
+# Parcel cache
+ui/.cache
+ui/.parcel-cache
+
+# TanStack Router generated files
+ui/src/routeTree.gen.ts
+
+# Vite
+ui/vite.config.ts.timestamp-*
+
+# Cloudflare Wrangler
+ui/.wrangler/
+ui/wrangler.toml
+
