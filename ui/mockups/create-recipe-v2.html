@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Create Recipe — Accordion Mockup v2</title>
+<style>
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.141 0.005 285.823);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.141 0.005 285.823);
+    --primary: oklch(0.21 0.006 285.885);
+    --primary-foreground: oklch(0.985 0.002 247.858);
+    --secondary: oklch(0.967 0.001 286.375);
+    --secondary-foreground: oklch(0.21 0.006 285.885);
+    --muted: oklch(0.967 0.001 286.375);
+    --muted-foreground: oklch(0.552 0.016 285.938);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.92 0.004 286.32);
+    --input: oklch(0.92 0.004 286.32);
+    --ring: oklch(0.87 0.006 286.286);
+    --radius: 0.625rem;
+    --accent: oklch(0.967 0.001 286.375);
+    --accent-foreground: oklch(0.21 0.006 285.885);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: oklch(0.141 0.005 285.823);
+      --foreground: oklch(0.985 0.002 247.858);
+      --card: oklch(0.141 0.005 285.823);
+      --card-foreground: oklch(0.985 0.002 247.858);
+      --primary: oklch(0.985 0.002 247.858);
+      --primary-foreground: oklch(0.21 0.006 285.885);
+      --secondary: oklch(0.274 0.006 286.033);
+      --secondary-foreground: oklch(0.985 0.002 247.858);
+      --muted: oklch(0.274 0.006 286.033);
+      --muted-foreground: oklch(0.552 0.016 285.938);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.274 0.006 286.033);
+      --input: oklch(0.274 0.006 286.033);
+      --ring: oklch(0.442 0.017 285.786);
+      --accent: oklch(0.274 0.006 286.033);
+      --accent-foreground: oklch(0.985 0.002 247.858);
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    line-height: 1.5;
+    padding: 1rem;
+    padding-top: 3.5rem;
+  }
+  @media (min-width: 768px) { body { padding: 1.5rem; padding-top: 3.5rem; } }
+  @media (min-width: 1024px) { body { padding: 2rem; padding-top: 3.5rem; } }
+
+  .container { max-width: 36rem; margin: 0 auto; }
+  @media (min-width: 1024px) { .container { max-width: 42rem; } }
+
+  /* Back link */
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    font-size: 0.875rem; color: var(--muted-foreground);
+    text-decoration: none; margin-bottom: 1rem;
+  }
+  .back-link:hover { color: var(--foreground); }
+  .back-link svg { width: 16px; height: 16px; }
+
+  h1 { font-size: 1.875rem; font-weight: 700; margin-bottom: 1.5rem; }
+
+  /* Card */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .card-header { padding: 1.5rem 1.5rem 0; }
+  .card-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem; }
+  .card-description { font-size: 0.875rem; color: var(--muted-foreground); }
+  .card-content { padding: 1.5rem; display: flex; flex-direction: column; gap: 0; }
+  .card-footer { padding: 0 1.5rem 1.5rem; }
+
+  /* Error banner */
+  .error-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.75rem; font-size: 0.875rem; margin-bottom: 1rem;
+    background: oklch(0.577 0.245 27.325 / 0.1); color: var(--destructive);
+    border: 1px solid oklch(0.577 0.245 27.325 / 0.2); border-radius: var(--radius);
+  }
+  .error-banner.hidden { display: none; }
+  .error-banner button {
+    background: none; border: none; color: var(--destructive); cursor: pointer;
+    font-size: 1.25rem; padding: 0.25rem; min-width: 44px; min-height: 44px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Field */
+  .field { display: flex; flex-direction: column; gap: 0.375rem; width: 100%; }
+  label { font-size: 0.875rem; font-weight: 500; }
+  label .required { color: var(--destructive); margin-left: 0.125rem; }
+
+  input, textarea {
+    width: 100%; padding: 0.5rem 0.75rem; font-size: 0.875rem;
+    color: var(--foreground); background: var(--background);
+    border: 1px solid var(--input); border-radius: calc(var(--radius) - 2px);
+    outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    font-family: inherit; line-height: 1.5;
+  }
+  input:focus, textarea:focus { border-color: var(--ring); box-shadow: 0 0 0 2px var(--ring); }
+  input.invalid, textarea.invalid { border-color: var(--destructive); }
+  input.invalid:focus, textarea.invalid:focus { box-shadow: 0 0 0 2px oklch(0.577 0.245 27.325 / 0.3); }
+  input::placeholder, textarea::placeholder { color: var(--muted-foreground); }
+  textarea { resize: vertical; min-height: 5rem; }
+  input[type="number"] { -moz-appearance: textfield; }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  .field-error { font-size: 0.875rem; color: var(--destructive); min-height: 0; }
+
+  /* Time grid */
+  .time-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+  @media (min-width: 768px) { .time-grid { grid-template-columns: 1fr 1fr 1fr; } }
+  .input-suffix { position: relative; }
+  .input-suffix input { padding-right: 2.5rem; }
+  .input-suffix .suffix {
+    position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+    font-size: 0.75rem; color: var(--muted-foreground); pointer-events: none;
+  }
+
+  /* ── Accordion ── */
+  .accordion { border-top: 1px solid var(--border); }
+  .accordion:first-child { border-top: none; }
+
+  .accordion-trigger {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; padding: 1rem 0; background: none; border: none;
+    font-size: 1rem; font-weight: 600; color: var(--foreground);
+    cursor: pointer; font-family: inherit; text-align: left;
+    min-height: 44px;
+  }
+  .accordion-trigger:hover { color: var(--foreground); }
+  .accordion-trigger:focus-visible {
+    outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 4px;
+  }
+
+  .accordion-trigger .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 500; min-width: 1.5rem; height: 1.5rem;
+    padding: 0 0.375rem; border-radius: 9999px;
+    background: var(--muted); color: var(--muted-foreground); margin-left: 0.5rem;
+  }
+
+  .accordion-trigger .chevron {
+    width: 16px; height: 16px; transition: transform 0.2s;
+    color: var(--muted-foreground); flex-shrink: 0;
+  }
+  .accordion.open .accordion-trigger .chevron { transform: rotate(180deg); }
+
+  .accordion-body {
+    overflow: hidden; max-height: 0;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 0;
+  }
+  .accordion.open .accordion-body {
+    max-height: 2000px; padding: 0 0 1rem 0;
+  }
+  .accordion-fields { display: flex; flex-direction: column; gap: 1rem; }
+
+  /* ── Ingredients ── */
+  .ingredient-scroll {
+    max-height: 20rem; overflow-y: auto; display: flex; flex-direction: column;
+    gap: 0.5rem; padding-right: 0.25rem;
+  }
+  .ingredient-scroll::-webkit-scrollbar { width: 4px; }
+  .ingredient-scroll::-webkit-scrollbar-track { background: transparent; }
+  .ingredient-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .ingredient-row {
+    display: grid; grid-template-columns: 1fr; gap: 0.5rem;
+    padding: 0.5rem 0.625rem; border: 1px solid var(--border);
+    border-radius: var(--radius); background: var(--background);
+  }
+  @media (min-width: 768px) {
+    .ingredient-row {
+      grid-template-columns: 1fr 5.5rem 5.5rem 2rem;
+      align-items: end; padding: 0.375rem 0.5rem;
+    }
+  }
+
+  .ingredient-row-mobile-bottom {
+    display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.5rem;
+  }
+  @media (min-width: 768px) { .ingredient-row-mobile-bottom { display: contents; } }
+
+  .ingredient-row input { padding: 0.375rem 0.625rem; font-size: 0.8125rem; }
+
+  .ingredient-count {
+    font-size: 0.75rem; color: var(--muted-foreground); text-align: right;
+    padding: 0.25rem 0;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    font-size: 0.875rem; font-weight: 500; border-radius: calc(var(--radius) - 2px);
+    cursor: pointer; transition: background 0.15s, opacity 0.15s;
+    font-family: inherit; min-height: 44px; border: none;
+  }
+  .btn-primary {
+    width: 100%; padding: 0.625rem 1.5rem;
+    background: var(--primary); color: var(--primary-foreground); font-size: 1rem;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-outline {
+    padding: 0.5rem 1rem; background: transparent;
+    color: var(--foreground); border: 1px solid var(--border);
+  }
+  .btn-outline:hover { background: var(--muted); }
+  .btn-ghost {
+    padding: 0; width: 2rem; height: 2rem; min-height: 2rem;
+    background: transparent; color: var(--muted-foreground); border: none;
+  }
+  .btn-ghost:hover { background: var(--muted); color: var(--destructive); }
+  .btn-disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn svg { width: 16px; height: 16px; }
+
+  /* Toast */
+  .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; pointer-events: none; }
+  .toast {
+    pointer-events: auto; display: none; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1rem; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-size: 0.875rem; animation: slideIn 0.3s ease;
+  }
+  .toast.show { display: flex; }
+  .toast .check { color: oklch(0.6 0.18 145); font-weight: bold; }
+  @keyframes slideIn { from { transform: translateY(1rem); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* State bar */
+  .state-bar {
+    position: fixed; top: 0; left: 0; right: 0; background: var(--muted);
+    border-bottom: 1px solid var(--border); padding: 0.5rem 1rem;
+    display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    z-index: 100; font-size: 0.8125rem;
+  }
+  .state-bar span { font-weight: 600; }
+  .state-bar button {
+    padding: 0.25rem 0.75rem; font-size: 0.75rem; border-radius: 9999px;
+    border: 1px solid var(--border); background: var(--background);
+    color: var(--foreground); cursor: pointer; font-family: inherit;
+  }
+  .state-bar button:hover, .state-bar button.active {
+    background: var(--primary); color: var(--primary-foreground);
+  }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid var(--primary-foreground); border-top-color: transparent;
+    border-radius: 50%; animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Mobile sticky submit */
+  @media (max-width: 767px) {
+    .card-footer {
+      position: sticky; bottom: 0;
+      background: var(--card); border-top: 1px solid var(--border);
+      padding: 1rem 1.5rem; margin: 0 -1px -1px;
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- State toggle -->
+<div class="state-bar">
+  <span>State:</span>
+  <button class="active" onclick="setState('default', this)">Default</button>
+  <button onclick="setState('filled', this)">Filled</button>
+  <button onclick="setState('validation', this)">Validation Error</button>
+  <button onclick="setState('server-error', this)">Server Error</button>
+  <button onclick="setState('network-error', this)">Network Error</button>
+  <button onclick="setState('submitting', this)">Submitting</button>
+  <button onclick="setState('success', this)">Success</button>
+  <button onclick="setState('many-ingredients', this)">Many Ingredients</button>
+</div>
+
+<div class="container">
+
+  <a href="#" class="back-link" onclick="return false">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    Back to Recipes
+  </a>
+
+  <h1>Create Recipe</h1>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Recipe Details</div>
+      <p class="card-description">Fill in the details for your new recipe.</p>
+    </div>
+
+    <form id="recipe-form" onsubmit="return false">
+      <div class="card-content">
+
+        <!-- Error banners -->
+        <div id="server-error-banner" class="error-banner hidden" role="alert">
+          <span>Name is already taken. Please choose a different recipe name.</span>
+          <button type="button" aria-label="Dismiss error" onclick="this.parentElement.classList.add('hidden')">×</button>
+        </div>
+        <div id="network-error-banner" class="error-banner hidden" role="alert">
+          <span>Unable to connect. Please check your internet connection and try again.</span>
+          <button type="button" aria-label="Dismiss error" onclick="this.parentElement.classList.add('hidden')">×</button>
+        </div>
+
+        <!-- ═══ Accordion: Basic Info ═══ -->
+        <div class="accordion open" id="acc-basic">
+          <button type="button" class="accordion-trigger" aria-expanded="true" onclick="toggleAccordion('acc-basic')">
+            <span>Basic Info</span>
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-fields">
+              <div class="field">
+                <label for="name">Recipe Name <span class="required" aria-hidden="true">*</span></label>
+                <input id="name" type="text" placeholder="e.g. Spaghetti Bolognese" aria-required="true" />
+                <div id="name-error" class="field-error" role="alert"></div>
+              </div>
+              <div class="field">
+                <label for="description">Description</label>
+                <textarea id="description" rows="3" placeholder="Briefly describe your recipe"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ Accordion: Instructions ═══ -->
+        <div class="accordion" id="acc-instructions">
+          <button type="button" class="accordion-trigger" aria-expanded="false" onclick="toggleAccordion('acc-instructions')">
+            <span>Instructions</span>
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-fields">
+              <div class="field">
+                <label for="instructions">Step-by-step Instructions</label>
+                <textarea id="instructions" rows="6" placeholder="1. Boil water&#10;2. Cook pasta&#10;3. Prepare sauce…"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ Accordion: Time & Servings ═══ -->
+        <div class="accordion" id="acc-time">
+          <button type="button" class="accordion-trigger" aria-expanded="false" onclick="toggleAccordion('acc-time')">
+            <span>Time &amp; Servings</span>
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-fields">
+              <div class="time-grid">
+                <div class="field">
+                  <label for="prep">Prep Time</label>
+                  <div class="input-suffix">
+                    <input id="prep" type="number" placeholder="0" min="1" />
+                    <span class="suffix">min</span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="cook">Cook Time</label>
+                  <div class="input-suffix">
+                    <input id="cook" type="number" placeholder="0" min="1" />
+                    <span class="suffix">min</span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="servings">Servings</label>
+                  <input id="servings" type="number" placeholder="0" min="1" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ Accordion: Ingredients ═══ -->
+        <div class="accordion open" id="acc-ingredients">
+          <button type="button" class="accordion-trigger" aria-expanded="true" onclick="toggleAccordion('acc-ingredients')">
+            <span>Ingredients <span class="badge" id="ingredient-badge">2</span></span>
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-fields">
+
+              <div class="ingredient-scroll" id="ingredient-scroll">
+                <div id="ingredient-list">
+                  <!-- Row 1 -->
+                  <div class="ingredient-row" style="margin-bottom: 0.5rem">
+                    <div class="field">
+                      <input type="text" placeholder="Ingredient name" value="Spaghetti" aria-label="Ingredient name" />
+                    </div>
+                    <div class="ingredient-row-mobile-bottom">
+                      <div class="field">
+                        <input type="number" placeholder="Qty" value="500" aria-label="Quantity" />
+                      </div>
+                      <div class="field">
+                        <input type="text" placeholder="e.g. cups" value="g" aria-label="Unit" />
+                      </div>
+                      <button type="button" class="btn btn-ghost" aria-label="Remove ingredient Spaghetti">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Row 2 -->
+                  <div class="ingredient-row" style="margin-bottom: 0.5rem">
+                    <div class="field">
+                      <input type="text" placeholder="Ingredient name" value="Ground Beef" aria-label="Ingredient name" />
+                    </div>
+                    <div class="ingredient-row-mobile-bottom">
+                      <div class="field">
+                        <input type="number" placeholder="Qty" value="400" aria-label="Quantity" />
+                      </div>
+                      <div class="field">
+                        <input type="text" placeholder="e.g. cups" value="g" aria-label="Unit" />
+                      </div>
+                      <button type="button" class="btn btn-ghost" aria-label="Remove ingredient Ground Beef">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <button type="button" class="btn btn-outline" id="add-btn" onclick="addIngredient()">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+                  Add Ingredient
+                </button>
+                <span class="ingredient-count" id="ingredient-count">2 items</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary" id="submit-btn">Save Recipe</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container">
+  <div class="toast" id="success-toast" role="status" aria-live="polite">
+    <span class="check">✓</span> Recipe created successfully!
+  </div>
+</div>
+
+<script>
+  let ingredientCounter = 2;
+
+  function toggleAccordion(id) {
+    const el = document.getElementById(id);
+    const isOpen = el.classList.toggle('open');
+    el.querySelector('.accordion-trigger').setAttribute('aria-expanded', isOpen);
+  }
+
+  function updateBadge() {
+    const count = document.querySelectorAll('#ingredient-list .ingredient-row').length;
+    document.getElementById('ingredient-badge').textContent = count;
+    document.getElementById('ingredient-count').textContent = count + ' item' + (count !== 1 ? 's' : '');
+  }
+
+  function addIngredient(name, qty, unit) {
+    ingredientCounter++;
+    const n = name || '';
+    const q = qty || '';
+    const u = unit || '';
+    const row = document.createElement('div');
+    row.className = 'ingredient-row';
+    row.style.marginBottom = '0.5rem';
+    row.innerHTML = `
+      <div class="field">
+        <input type="text" placeholder="Ingredient name" value="${n}" aria-label="Ingredient name" />
+      </div>
+      <div class="ingredient-row-mobile-bottom">
+        <div class="field">
+          <input type="number" placeholder="Qty" value="${q}" aria-label="Quantity" />
+        </div>
+        <div class="field">
+          <input type="text" placeholder="e.g. cups" value="${u}" aria-label="Unit" />
+        </div>
+        <button type="button" class="btn btn-ghost" aria-label="Remove ingredient" onclick="this.closest('.ingredient-row').remove(); updateBadge();">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+        </button>
+      </div>
+    `;
+    document.getElementById('ingredient-list').appendChild(row);
+    updateBadge();
+    // Scroll to bottom and focus
+    const scroll = document.getElementById('ingredient-scroll');
+    scroll.scrollTop = scroll.scrollHeight;
+    row.querySelector('input').focus();
+  }
+
+  function resetForm() {
+    document.getElementById('server-error-banner').classList.add('hidden');
+    document.getElementById('network-error-banner').classList.add('hidden');
+    document.getElementById('success-toast').classList.remove('show');
+    document.getElementById('name-error').textContent = '';
+    document.getElementById('name').classList.remove('invalid');
+    document.getElementById('name').removeAttribute('aria-invalid');
+    document.getElementById('name').value = '';
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.innerHTML = 'Save Recipe';
+    submitBtn.classList.remove('btn-disabled');
+    submitBtn.removeAttribute('aria-disabled');
+    document.getElementById('recipe-form').removeAttribute('aria-busy');
+
+    // Reset ingredients to 2 default rows
+    document.getElementById('ingredient-list').innerHTML = `
+      <div class="ingredient-row" style="margin-bottom: 0.5rem">
+        <div class="field"><input type="text" placeholder="Ingredient name" value="Spaghetti" aria-label="Ingredient name" /></div>
+        <div class="ingredient-row-mobile-bottom">
+          <div class="field"><input type="number" placeholder="Qty" value="500" aria-label="Quantity" /></div>
+          <div class="field"><input type="text" placeholder="e.g. cups" value="g" aria-label="Unit" /></div>
+          <button type="button" class="btn btn-ghost" aria-label="Remove ingredient Spaghetti" onclick="this.closest('.ingredient-row').remove(); updateBadge();">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="ingredient-row" style="margin-bottom: 0.5rem">
+        <div class="field"><input type="text" placeholder="Ingredient name" value="Ground Beef" aria-label="Ingredient name" /></div>
+        <div class="ingredient-row-mobile-bottom">
+          <div class="field"><input type="number" placeholder="Qty" value="400" aria-label="Quantity" /></div>
+          <div class="field"><input type="text" placeholder="e.g. cups" value="g" aria-label="Unit" /></div>
+          <button type="button" class="btn btn-ghost" aria-label="Remove ingredient Ground Beef" onclick="this.closest('.ingredient-row').remove(); updateBadge();">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+          </button>
+        </div>
+      </div>
+    `;
+    updateBadge();
+  }
+
+  function setState(state, btnEl) {
+    document.querySelectorAll('.state-bar button').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    resetForm();
+
+    switch (state) {
+      case 'filled':
+        document.getElementById('name').value = 'Spaghetti Bolognese';
+        document.getElementById('description').value = 'A classic Italian pasta dish with rich meat sauce.';
+        document.getElementById('instructions').value = '1. Boil water and cook spaghetti\n2. Brown the ground beef\n3. Add tomato sauce and simmer\n4. Serve pasta with sauce on top';
+        document.getElementById('prep').value = '15';
+        document.getElementById('cook').value = '30';
+        document.getElementById('servings').value = '4';
+        // Open all accordions
+        ['acc-basic','acc-instructions','acc-time','acc-ingredients'].forEach(id => {
+          const el = document.getElementById(id);
+          if (!el.classList.contains('open')) toggleAccordion(id);
+        });
+        break;
+
+      case 'validation':
+        document.getElementById('name').classList.add('invalid');
+        document.getElementById('name').setAttribute('aria-invalid', 'true');
+        document.getElementById('name-error').textContent = 'Recipe name is required';
+        // Open basic info to show error
+        if (!document.getElementById('acc-basic').classList.contains('open'))
+          toggleAccordion('acc-basic');
+        break;
+
+      case 'server-error':
+        document.getElementById('server-error-banner').classList.remove('hidden');
+        break;
+
+      case 'network-error':
+        document.getElementById('network-error-banner').classList.remove('hidden');
+        break;
+
+      case 'submitting':
+        document.getElementById('name').value = 'Spaghetti Bolognese';
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.innerHTML = '<span class="spinner"></span> Saving…';
+        submitBtn.classList.add('btn-disabled');
+        submitBtn.setAttribute('aria-disabled', 'true');
+        document.getElementById('recipe-form').setAttribute('aria-busy', 'true');
+        break;
+
+      case 'success':
+        document.getElementById('success-toast').classList.add('show');
+        setTimeout(() => document.getElementById('success-toast').classList.remove('show'), 4000);
+        break;
+
+      case 'many-ingredients':
+        document.getElementById('name').value = 'Beef Stew';
+        // Open ingredients
+        if (!document.getElementById('acc-ingredients').classList.contains('open'))
+          toggleAccordion('acc-ingredients');
+        // Add lots of ingredients to demonstrate scroll
+        const extras = [
+          ['Onion', '2', 'large'], ['Garlic', '4', 'cloves'], ['Carrots', '3', ''],
+          ['Potatoes', '4', 'medium'], ['Celery', '2', 'stalks'], ['Tomato Paste', '2', 'tbsp'],
+          ['Beef Broth', '4', 'cups'], ['Red Wine', '1', 'cup'], ['Bay Leaves', '2', ''],
+          ['Thyme', '1', 'tsp'], ['Salt', '1', 'tsp'], ['Black Pepper', '0.5', 'tsp'],
+          ['Flour', '3', 'tbsp'], ['Olive Oil', '2', 'tbsp']
+        ];
+        extras.forEach(([n, q, u]) => addIngredient(n, q, u));
+        break;
+    }
+  }
+</script>
+
+</body>
+</html>

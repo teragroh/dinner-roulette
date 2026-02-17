@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Create Recipe — Mockup</title>
+<style>
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.141 0.005 285.823);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.141 0.005 285.823);
+    --primary: oklch(0.21 0.006 285.885);
+    --primary-foreground: oklch(0.985 0.002 247.858);
+    --secondary: oklch(0.967 0.001 286.375);
+    --secondary-foreground: oklch(0.21 0.006 285.885);
+    --muted: oklch(0.967 0.001 286.375);
+    --muted-foreground: oklch(0.552 0.016 285.938);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.92 0.004 286.32);
+    --input: oklch(0.92 0.004 286.32);
+    --ring: oklch(0.87 0.006 286.286);
+    --radius: 0.625rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: oklch(0.141 0.005 285.823);
+      --foreground: oklch(0.985 0.002 247.858);
+      --card: oklch(0.141 0.005 285.823);
+      --card-foreground: oklch(0.985 0.002 247.858);
+      --primary: oklch(0.985 0.002 247.858);
+      --primary-foreground: oklch(0.21 0.006 285.885);
+      --secondary: oklch(0.274 0.006 286.033);
+      --secondary-foreground: oklch(0.985 0.002 247.858);
+      --muted: oklch(0.274 0.006 286.033);
+      --muted-foreground: oklch(0.552 0.016 285.938);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.274 0.006 286.033);
+      --input: oklch(0.274 0.006 286.033);
+      --ring: oklch(0.442 0.017 285.786);
+      --radius: 0.625rem;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    line-height: 1.5;
+    padding: 1rem;
+  }
+
+  @media (min-width: 768px) { body { padding: 1.5rem; } }
+  @media (min-width: 1024px) { body { padding: 2rem; } }
+
+  .container {
+    max-width: 36rem;
+    margin: 0 auto;
+  }
+  @media (min-width: 768px) { .container { max-width: 36rem; } }
+  @media (min-width: 1024px) { .container { max-width: 42rem; } }
+
+  /* Back link */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    margin-bottom: 1rem;
+  }
+  .back-link:hover { color: var(--foreground); }
+  .back-link svg { width: 16px; height: 16px; }
+
+  h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 1.5rem 1.5rem 0;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--card-foreground);
+    margin-bottom: 0.25rem;
+  }
+
+  .card-description {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-bottom: 0;
+  }
+
+  .card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .card-footer {
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  /* Error banner */
+  .error-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    background: oklch(0.577 0.245 27.325 / 0.1);
+    color: var(--destructive);
+    border: 1px solid oklch(0.577 0.245 27.325 / 0.2);
+    border-radius: var(--radius);
+  }
+  .error-banner.hidden { display: none; }
+  .error-banner button {
+    background: none;
+    border: none;
+    color: var(--destructive);
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+    padding: 0.25rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Field */
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    width: 100%;
+  }
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+  }
+
+  label .required {
+    color: var(--destructive);
+    margin-left: 0.125rem;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--foreground);
+    background: var(--background);
+    border: 1px solid var(--input);
+    border-radius: calc(var(--radius) - 2px);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    font-family: inherit;
+  }
+
+  input:focus, textarea:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px var(--ring);
+  }
+
+  input.invalid, textarea.invalid {
+    border-color: var(--destructive);
+  }
+  input.invalid:focus, textarea.invalid:focus {
+    box-shadow: 0 0 0 2px oklch(0.577 0.245 27.325 / 0.3);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 5rem;
+  }
+
+  .field-error {
+    font-size: 0.875rem;
+    color: var(--destructive);
+    min-height: 0;
+  }
+
+  /* Number inputs */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
+
+  /* Grid row for times + servings */
+  .time-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .time-grid {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
+  .input-suffix {
+    position: relative;
+  }
+  .input-suffix input {
+    padding-right: 2.5rem;
+  }
+  .input-suffix .suffix {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    pointer-events: none;
+  }
+
+  /* Separator */
+  .separator {
+    height: 1px;
+    background: var(--border);
+    margin: 0.5rem 0;
+  }
+
+  /* Section heading */
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 0.25rem;
+  }
+
+  /* Ingredients */
+  .ingredient-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .ingredient-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--background);
+    position: relative;
+  }
+
+  @media (min-width: 768px) {
+    .ingredient-row {
+      grid-template-columns: 1fr 6rem 6rem 2.25rem;
+      align-items: end;
+      padding: 0.5rem;
+    }
+  }
+
+  .ingredient-row-mobile-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 0.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .ingredient-row-mobile-bottom {
+      display: contents;
+    }
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: calc(var(--radius) - 2px);
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+    font-family: inherit;
+    min-height: 44px;
+    border: none;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 0.625rem 1.5rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 1rem;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+
+  .btn-outline {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--foreground);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { background: var(--muted); }
+
+  .btn-ghost {
+    padding: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    min-height: 2.25rem;
+    background: transparent;
+    color: var(--muted-foreground);
+    border: none;
+  }
+  .btn-ghost:hover { background: var(--muted); color: var(--destructive); }
+
+  .btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn svg { width: 16px; height: 16px; }
+
+  /* Toast mockup */
+  .toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  .toast {
+    pointer-events: auto;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-size: 0.875rem;
+    color: var(--foreground);
+    animation: slideIn 0.3s ease;
+  }
+  .toast.show { display: flex; }
+  .toast .check { color: oklch(0.6 0.18 145); font-weight: bold; }
+
+  @keyframes slideIn {
+    from { transform: translateY(1rem); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* State toggle bar */
+  .state-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    z-index: 100;
+    font-size: 0.8125rem;
+  }
+  .state-bar span { font-weight: 600; }
+  .state-bar button {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    background: var(--background);
+    color: var(--foreground);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .state-bar button:hover { background: var(--primary); color: var(--primary-foreground); }
+  .state-bar button.active { background: var(--primary); color: var(--primary-foreground); }
+
+  body { padding-top: 3.5rem; }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--primary-foreground);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- State toggle bar -->
+<div class="state-bar">
+  <span>State:</span>
+  <button class="active" onclick="setState('default')">Default</button>
+  <button onclick="setState('validation')">Validation Error</button>
+  <button onclick="setState('server-error')">Server Error (400)</button>
+  <button onclick="setState('network-error')">Network Error</button>
+  <button onclick="setState('submitting')">Submitting</button>
+  <button onclick="setState('success')">Success Toast</button>
+</div>
+
+<div class="container">
+
+  <a href="#" class="back-link">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    Back to Recipes
+  </a>
+
+  <h1>Create Recipe</h1>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Recipe Details</div>
+      <p class="card-description">Fill in the details for your new recipe.</p>
+    </div>
+
+    <form id="recipe-form" onsubmit="return false;">
+      <div class="card-content">
+
+        <!-- Error banners -->
+        <div id="server-error-banner" class="error-banner hidden" role="alert">
+          <span>Name is already taken. Please choose a different recipe name.</span>
+          <button type="button" aria-label="Dismiss error" onclick="this.parentElement.classList.add('hidden')">×</button>
+        </div>
+
+        <div id="network-error-banner" class="error-banner hidden" role="alert">
+          <span>Unable to connect. Please check your internet connection and try again.</span>
+          <button type="button" aria-label="Dismiss error" onclick="this.parentElement.classList.add('hidden')">×</button>
+        </div>
+
+        <!-- Name -->
+        <div class="field">
+          <label for="name">Recipe Name <span class="required" aria-hidden="true">*</span></label>
+          <input id="name" type="text" placeholder="e.g. Spaghetti Bolognese" aria-required="true" />
+          <div id="name-error" class="field-error" role="alert"></div>
+        </div>
+
+        <!-- Description -->
+        <div class="field">
+          <label for="description">Description</label>
+          <textarea id="description" rows="3" placeholder="Briefly describe your recipe"></textarea>
+        </div>
+
+        <!-- Instructions -->
+        <div class="field">
+          <label for="instructions">Instructions</label>
+          <textarea id="instructions" rows="5" placeholder="Step-by-step instructions"></textarea>
+        </div>
+
+        <!-- Times + Servings -->
+        <div class="time-grid">
+          <div class="field">
+            <label for="prep">Prep Time</label>
+            <div class="input-suffix">
+              <input id="prep" type="number" placeholder="0" min="1" />
+              <span class="suffix">min</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="cook">Cook Time</label>
+            <div class="input-suffix">
+              <input id="cook" type="number" placeholder="0" min="1" />
+              <span class="suffix">min</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="servings">Servings</label>
+            <input id="servings" type="number" placeholder="0" min="1" />
+          </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <!-- Ingredients -->
+        <h2>Ingredients</h2>
+
+        <div class="ingredient-list" id="ingredient-list">
+          <!-- Row 1 -->
+          <div class="ingredient-row">
+            <div class="field">
+              <label for="ing-1-name" class="sr-only" style="font-size:0.75rem;color:var(--muted-foreground)">Ingredient name</label>
+              <input id="ing-1-name" type="text" placeholder="Ingredient name" value="Spaghetti" />
+              <div id="ing-1-name-error" class="field-error" role="alert"></div>
+            </div>
+            <div class="ingredient-row-mobile-bottom">
+              <div class="field">
+                <label for="ing-1-qty" class="sr-only" style="font-size:0.75rem;color:var(--muted-foreground)">Quantity</label>
+                <input id="ing-1-qty" type="number" placeholder="Qty" value="500" />
+                <div id="ing-1-qty-error" class="field-error" role="alert"></div>
+              </div>
+              <div class="field">
+                <label for="ing-1-unit" class="sr-only" style="font-size:0.75rem;color:var(--muted-foreground)">Unit</label>
+                <input id="ing-1-unit" type="text" placeholder="e.g. cups" value="g" />
+              </div>
+              <button type="button" class="btn btn-ghost" aria-label="Remove ingredient Spaghetti" title="Remove">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="ingredient-row">
+            <div class="field">
+              <label for="ing-2-name" class="sr-only" style="font-size:0.75rem;color:var(--muted-foreground)">Ingredient name</label>
+              <input id="ing-2-name" type="text" placeholder="Ingredient name" value="Ground Beef" />
+              <div id="ing-2-name-error" class="field-error" role="alert"></div>
+            </div>
+            <div class="ingredient-row-mobile-bottom">
+              <div class="field">
+                <label for="ing-2-qty" class="sr-only" style="font-size:0.75rem;color:var(--muted-foreground)">Quantity</label>
+                <input id="ing-2-qty" type="number" placeholder="Qty" value="400" />
+              </div>
+              <div class="field">
+                <label for="ing-2-unit" class="sr-only" style="font-size:0.75rem;color:var(--muted-foreground)">Unit</label>
+                <input id="ing-2-unit" type="text" placeholder="e.g. cups" value="g" />
+              </div>
+              <button type="button" class="btn btn-ghost" aria-label="Remove ingredient Ground Beef" title="Remove">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Row 3 (empty — for demo) -->
+          <div class="ingredient-row">
+            <div class="field">
+              <label for="ing-3-name" class="sr-only" style="font-size:0.75rem;color:var(--muted-foreground)">Ingredient name</label>
+              <input id="ing-3-name" type="text" placeholder="Ingredient name" />
+              <div id="ing-3-name-error" class="field-error" role="alert"></div>
+            </div>
+            <div class="ingredient-row-mobile-bottom">
+              <div class="field">
+                <label for="ing-3-qty" class="sr-only" style="font-size:0.75rem;color:var(--muted-foreground)">Quantity</label>
+                <input id="ing-3-qty" type="number" placeholder="Qty" />
+                <div id="ing-3-qty-error" class="field-error" role="alert"></div>
+              </div>
+              <div class="field">
+                <label for="ing-3-unit" class="sr-only" style="font-size:0.75rem;color:var(--muted-foreground)">Unit</label>
+                <input id="ing-3-unit" type="text" placeholder="e.g. cups" />
+              </div>
+              <button type="button" class="btn btn-ghost" aria-label="Remove ingredient" title="Remove">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add ingredient -->
+        <button type="button" class="btn btn-outline" id="add-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+          Add Ingredient
+        </button>
+
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary" id="submit-btn">
+          Save Recipe
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Success toast -->
+<div class="toast-container">
+  <div class="toast" id="success-toast" role="status" aria-live="polite">
+    <span class="check">✓</span>
+    Recipe created successfully!
+  </div>
+</div>
+
+<script>
+  function setState(state) {
+    // Reset all
+    document.querySelectorAll('.state-bar button').forEach(b => b.classList.remove('active'));
+    document.getElementById('server-error-banner').classList.add('hidden');
+    document.getElementById('network-error-banner').classList.add('hidden');
+    document.getElementById('success-toast').classList.remove('show');
+    document.getElementById('name-error').textContent = '';
+    document.getElementById('name').classList.remove('invalid');
+    document.getElementById('name').removeAttribute('aria-invalid');
+    document.getElementById('ing-3-name-error').textContent = '';
+    document.getElementById('ing-3-name').classList.remove('invalid');
+    document.getElementById('ing-3-qty-error').textContent = '';
+    document.getElementById('ing-3-qty').classList.remove('invalid');
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.innerHTML = 'Save Recipe';
+    submitBtn.classList.remove('btn-disabled');
+    submitBtn.removeAttribute('aria-disabled');
+    document.getElementById('recipe-form').removeAttribute('aria-busy');
+
+    // Highlight active button
+    event.target.classList.add('active');
+
+    switch (state) {
+      case 'validation':
+        document.getElementById('name').value = '';
+        document.getElementById('name').classList.add('invalid');
+        document.getElementById('name').setAttribute('aria-invalid', 'true');
+        document.getElementById('name-error').textContent = 'Recipe name is required';
+        document.getElementById('ing-3-name').classList.add('invalid');
+        document.getElementById('ing-3-name-error').textContent = 'Ingredient name is required';
+        document.getElementById('ing-3-qty').classList.add('invalid');
+        document.getElementById('ing-3-qty-error').textContent = 'Quantity is required';
+        break;
+
+      case 'server-error':
+        document.getElementById('server-error-banner').classList.remove('hidden');
+        break;
+
+      case 'network-error':
+        document.getElementById('network-error-banner').classList.remove('hidden');
+        break;
+
+      case 'submitting':
+        submitBtn.innerHTML = '<span class="spinner"></span> Saving…';
+        submitBtn.classList.add('btn-disabled');
+        submitBtn.setAttribute('aria-disabled', 'true');
+        document.getElementById('recipe-form').setAttribute('aria-busy', 'true');
+        break;
+
+      case 'success':
+        document.getElementById('success-toast').classList.add('show');
+        setTimeout(() => {
+          document.getElementById('success-toast').classList.remove('show');
+        }, 4000);
+        break;
+    }
+  }
+</script>
+
+</body>
+</html>

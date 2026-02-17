@@ -3,8 +3,7 @@ package com.teragroh.dinner_roulette.recipe.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.teragroh.dinner_roulette.user.model.Users;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -31,16 +30,26 @@ public class Recipe {
     @NotNull(message = "Name is required")
     @NotBlank(message = "Name cannot be empty")
     @Column(length = 200, nullable = false)
+    @Size(max = 200, message = "Name cannot exceed 200 characters")
     private String name;
 
     @Column(length = 1000)
+    @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
 
     @Column(columnDefinition = "TEXT")
     private String instructions;
 
+    @Positive(message = "Servings must be a positive integer")
+    @Max(value = 100, message = "Servings cannot exceed 100")
+    private Integer servings;
+
+    @Positive(message = "Cook time must be a positive integer")
+    @Max(value=1440, message = "Cook time cannot exceed 1440 minutes (24 hours)")
     private Integer cookTimeMinutes;
 
+    @Positive(message = "Prep time must be a positive integer")
+    @Max(value=1440, message = "Prep time cannot exceed 1440 minutes (24 hours)")
     private Integer prepTimeMinutes;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -110,6 +119,14 @@ public class Recipe {
 
     public void setIngredients(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public Integer getServings() {
+        return servings;
+    }
+
+    public void setServings(Integer servings) {
+        this.servings = servings;
     }
 
     public Integer getCookTimeMinutes() {
