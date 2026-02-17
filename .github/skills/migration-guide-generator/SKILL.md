@@ -1,61 +1,66 @@
 ---
 name: Migration Guide Generator
-description: Generate a MIGRATION.md and changelog entries after extracting a module to a new repository. Use at the end of an extraction workflow, on prompts like "document this migration", "generate migration guide", or "write MIGRATION.md". Produces step-by-step consumer instructions, before/after code examples, breaking change notices, rollback steps, and conventional commit suggestions.
+description: Generate a file manifest and migration report after copying a feature to a new microservice. Use at the end of an extraction workflow, on prompts like "document this migration", "generate migration report", or "what changed". Produces a detailed file manifest (copied/changed/new/deleted), configuration diff, conventional commit suggestions, and next-steps checklist. Does NOT modify the original microservice.
 ---
 
 ## Instructions
 
 ### Inputs
 
-Gather before generating (most from module-extraction-analyzer output):
-- Module name and old location.
-- New repo URL and package name.
-- Install command for the new package.
-- Import rewrite map (old → new, from import-path-updater).
-- Breaking changes (removed exports, renamed symbols, behavior changes).
-- Configuration changes (new env vars, removed config keys).
-- Timeline for deprecation and removal.
+Gather from the extraction workflow:
+- Feature name and original microservice name.
+- New microservice name and repo URL.
+- Template URL (if used).
+- File manifest from the extraction (every file that was copied, created, or modified).
+- Import/path changes applied (from import-path-updater).
+- Config changes (env vars, properties, Webpack aliases).
+- Database changes (new tables, API boundaries).
 
 ### Workflow
 
-1. Copy [assets/MIGRATION-TEMPLATE.md](assets/MIGRATION-TEMPLATE.md) into the repo as `MIGRATION.md`.
-2. Fill every placeholder with actual values from the inputs above.
-3. Tailor syntax to the project stack — see adaptations below.
-4. Generate conventional commit messages for each migration phase.
-5. Generate a changelog entry for the source repo.
-6. Validate: no unfilled placeholders, install commands match package manager, breaking changes complete or explicitly "none", rollback refs are real commits/tags.
+1. Compile the file manifest using [assets/file-manifest-template.md](assets/file-manifest-template.md).
+2. Fill every section with actual values.
+3. Generate conventional commit messages.
+4. Produce a next-steps checklist.
+5. Validate: no unfilled placeholders remain.
 
-### Stack Adaptations
+### File Manifest Categories
 
-| Stack | Adapt |
-|-------|-------|
-| JS/TS + npm | `npm install`, ES `import` syntax, `package.json` |
-| Java + Maven | `pom.xml` `<dependency>`, Java `import`, module-info if JPMS |
-| Python + pip | `pip install` / `pyproject.toml`, `from`/`import` |
-| Monorepo (Turborepo/Nx) | Workspace references, internal package setup |
+Every file touched during extraction falls into one of these categories:
+
+| Category | Symbol | Meaning |
+|----------|--------|---------|
+| **Copied** | 📋 | Duplicated from original service without changes |
+| **Copied + Modified** | ✏️ | Duplicated then modified (imports, packages, config) |
+| **New** | 🆕 | Created fresh (from template or hand-written for new service) |
+| **Template** | 📐 | Came from the microservice template, unchanged |
+| **Not moved** | ➖ | Stays only in original service (shared code accessed via API) |
 
 ### Conventional Commits
 
 ```
-feat(<module>): extract <module> to standalone package
+feat(<new-service>): extract <feature> from <original-service>
 
-BREAKING CHANGE: <module> is now published as `<package>`.
-Update imports from `@/old/path` to `<package>`.
+Copied <feature> frontend and backend code to new microservice
+scaffolded from <template>. Original service unchanged.
 
-chore(<source-repo>): remove extracted <module> folder
-refactor(<source-repo>): update imports to use <package>
-docs: add MIGRATION.md for <module> extraction
+chore(<new-service>): scaffold from microservice template
+
+refactor(<new-service>): update imports and packages for new service structure
+
+docs(<new-service>): add extraction manifest and setup guide
 ```
 
-### Changelog Entry
+### Next-Steps Checklist
 
-```markdown
-## [<version>] — <date>
+Include in every report:
 
-### Changed
-- **BREAKING:** `<module>` extracted to [`<package>`](<url>).
-  See [MIGRATION.md](MIGRATION.md) for upgrade instructions.
-
-### Removed
-- `<old-folder>/` — use `<package>` instead.
-```
+- [ ] New service builds (`npm run build` / `mvn clean verify`)
+- [ ] Jest tests pass in new service
+- [ ] Playwright tests pass against new service
+- [ ] Database migrations created for new service's tables
+- [ ] Environment variables configured in deployment
+- [ ] CI/CD pipeline configured (from template or new)
+- [ ] API gateway / routing updated to route to new service
+- [ ] Team notified of new service location
+- [ ] Original service still builds and all tests pass (should be unchanged)

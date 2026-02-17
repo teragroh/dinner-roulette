@@ -1,6 +1,6 @@
 ---
 name: Repo Extraction
-description: Safely extract a module, package, or folder from a monorepo into a new standalone repository. Use when a user wants to split a codebase, extract a shared library, move a service to its own repo, or decouple a module. Covers dependency analysis, file identification, import/path rewriting, git history preservation via filter-repo, migration guide generation, and post-extraction validation.
+description: Safely copy a feature from one microservice into a new standalone microservice. Use when a user wants to extract a feature, split a service, or spin off a bounded context. The feature STAYS in the original service — this is a duplication, not a move. Covers dependency analysis, template-based scaffolding, import/path rewriting, and file manifest generation. Stack focus is React (JS), Spring Boot, Webpack, Jest, and Playwright.
 ---
 
 ## Overview
@@ -9,48 +9,24 @@ Composite workflow — delegates to three focused skills and one orchestrating a
 
 | Skill | Phase |
 |-------|-------|
-| **module-extraction-analyzer** | Analyze deps, detect coupling, produce Extraction Plan |
-| **import-path-updater** | Rewrite consumer imports post-extraction |
-| **migration-guide-generator** | Generate MIGRATION.md, changelog, conventional commits |
+| **module-extraction-analyzer** | Analyze feature deps, detect coupling, produce Extraction Plan |
+| **import-path-updater** | Rewrite imports/packages in the NEW microservice only |
+| **migration-guide-generator** | Generate file manifest (copied/changed/new) and next-steps |
 
-**Agent:** `extraction-specialist` (`.github/agents/extraction-specialist.agent.md`) — runs all phases in order.
+**Agent:** `extraction-specialist` (`.github/agents/extraction-specialist.agent.md`)
 
 ## Phases
 
-1. **Analyze** — module-extraction-analyzer → Extraction Plan → user confirms.
-2. **Extract** — `git filter-repo` on a fresh clone (see commands below). Set up new repo scaffolding.
-3. **Update Source** — import-path-updater → dry-run → user confirms → apply. Remove extracted folder.
-4. **Document** — migration-guide-generator → MIGRATION.md + changelog.
-5. **Validate** — both repos build, tests pass, no dangling imports.
+1. **Analyze** — module-extraction-analyzer → Extraction Plan → **user must approve before continuing**.
+2. **Scaffold** — clone/init from microservice template URL. Map feature files to template structure.
+3. **Copy** — duplicate feature files (frontend + backend + tests) into the new service.
+4. **Rewrite** — import-path-updater → dry-run → user confirms → apply. Fix packages, aliases, paths.
+5. **Document** — migration-guide-generator → file manifest with 📋/✏️/🆕/📐/➖ status for every file.
+6. **Validate** — new service builds and tests pass. Original service unchanged.
 
-## Git History Preservation
+## Key Constraints
 
-Prefer `git filter-repo`. Never use `git filter-branch` (deprecated).
-
-```bash
-git clone <source-repo-url> <new-repo-name>
-cd <new-repo-name>
-git remote remove origin
-git filter-repo --path <target-folder>/
-git filter-repo --path-rename <target-folder>/:   # optional: flatten
-git remote add origin <new-repo-url>
-git push -u origin main
-```
-
-| Factor | filter-repo | subtree split | Fresh start |
-|--------|-------------|---------------|-------------|
-| History | Full | Single prefix | None |
-| Multi-path | ✅ | ❌ | N/A |
-| Path rewrite | ✅ | ❌ | N/A |
-| Speed | Fast | Slow | Instant |
-
-## Validation Checklist
-
-- [ ] New repo builds from clean clone
-- [ ] All tests pass in both repos
-- [ ] `grep` for old paths returns 0
-- [ ] Git history present (if preserved)
-- [ ] LICENSE matches source repo
-- [ ] README documents install + usage
-- [ ] CI/CD runs in new repo
-- [ ] MIGRATION.md is complete
+- **Original service is NEVER modified.** This is a copy, not a move.
+- **Plan-first.** The Extraction Plan must be approved before any files are touched.
+- **Template-aware.** When a template URL is provided, scaffold from it and map features to its conventions.
+- **File manifest required.** Every extraction must end with a detailed report of what was copied, changed, or created.

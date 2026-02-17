@@ -1,39 +1,46 @@
 ---
 name: Import Path Updater
-description: Rewrite imports across a codebase after extracting a module to a new package or repo. Use after an extraction is complete, on prompts like "fix imports in original repo", "update imports to use new package", or any post-move refactor. Handles relative paths, path aliases, tsconfig paths, barrel exports, and named imports. Always runs a dry-run first before applying changes.
+description: Rewrite imports and paths in the NEW microservice after copying a feature from an existing service. Use on prompts like "fix imports in new microservice", "update paths after extraction", or any post-copy refactor. Handles Webpack aliases, relative paths, Jest mock paths, Playwright test references, Spring Boot package names, and property file keys. Always runs a dry-run first before applying changes. The original microservice is NOT modified.
 ---
 
 ## Instructions
 
+### Key Principle
+
+Only the **new microservice** gets import rewrites. The original stays untouched. The goal is to make the copied feature compile and run in the new service's directory structure.
+
 ### Inputs
 
-Gather before starting:
-1. **Old import pattern** — what imports look like today (e.g., `@/components/ui`).
-2. **New package name** — what imports should become (e.g., `@acme/ui`).
-3. **Consumer files** — from module-extraction-analyzer report, or grep the repo.
+1. **Original path structure** — where files lived in the source service.
+2. **New path structure** — where files now live in the new service (from template mapping).
+3. **Package rename** — old Java package → new Java package (e.g., `com.corp.original.feature` → `com.corp.newservice.feature`).
+4. **Webpack alias changes** — old aliases → new aliases (if the template uses different conventions).
 
 ### Workflow
 
-1. **Scan** — grep the repo for every import referencing the old path. Include all file types: `.ts`, `.tsx`, `.js`, `.jsx`, `.css`, `.scss`, test files, config files.
-2. **Check aliases** — read `tsconfig.json` `paths`, Vite/Webpack `resolve.alias`, or Python `__init__.py` re-exports. Decide whether to remove or update alias entries.
-3. **Build rewrite map** — explicit table: old import → new import → files affected. Rules:
-   - Prefer named imports over defaults.
-   - Prefer barrel imports if the new package has `index.ts`.
-   - Preserve `import type { ... }` separately from value imports.
-4. **Dry-run** — present all changes as diffs WITHOUT applying. Wait for user confirmation.
-5. **Apply** — rewrite each import, preserving whitespace, ordering, and adjacent comments. Verify no duplicates created.
-6. **Handle edge cases** — see table below.
-7. **Verify** — grep for old path (expect 0 results), then `build` + `lint` + `test`.
-8. **Output summary** — files modified, imports rewritten, shims created, remaining manual fixes.
+1. **Scan** — grep every copied file for imports referencing old paths. Include `.js`, `.jsx`, `.java`, `.css`, `.scss`, test files, config files.
+2. **Check Webpack aliases** — read the new service's `webpack.config.js` `resolve.alias`. Map old aliases to new ones.
+3. **Check Spring packages** — the copied Java files still reference the old package. Build the rename map.
+4. **Build rewrite map** — explicit table: old path/import → new path/import → files affected. Rules:
+   - JS: update relative paths to match new directory structure.
+   - JS: update Webpack alias references if alias names changed.
+   - Java: update `package` declarations and all `import` statements.
+   - Properties: update property key prefixes if namespaced by service.
+   - Jest: update `jest.mock()` paths and module name mapper entries.
+5. **Dry-run** — present all changes as diffs. **Wait for user confirmation.**
+6. **Apply** — rewrite each import/package, preserving whitespace and comments.
+7. **Handle edge cases** — see table below.
+8. **Verify** — build + lint + test the new service. Grep for any old paths remaining.
+9. **Output summary** — files modified, imports rewritten, remaining manual fixes.
 
 ### Edge Cases
 
 | Case | Resolution |
 |------|-----------|
-| Re-export shim for gradual migration | Create shim at old path, mark `@deprecated` |
-| Dynamic `import()` / `require()` | Search and rewrite same as static imports |
-| String references (jest mocks, storybook, config) | Grep old path in all file types, not just code |
-| CSS `@import` / `@use` | Rewrite SCSS/CSS imports too |
-| Test files (`*.test.*`, `*.spec.*`) | Apply same rewrites |
-| `tsconfig.json` `paths` entries | Remove or update entries for extracted folder |
-| Monorepo workspace references | Update `package.json` workspace entries |
+| Webpack `resolve.alias` differs between services | Map old alias → new alias in rewrite map |
+| `jest.moduleNameMapper` in package.json or jest.config | Update mapper entries for new paths |
+| Playwright test selectors referencing old service URLs | Update base URLs to new service |
+| `process.env.*` variable names changed | Search-replace env var names in JS files |
+| Spring `@ComponentScan` or `@EntityScan` base packages | Update to new package prefix |
+| Shared utility copied to different path | Update all internal references to new location |
+| Hardcoded API paths (e.g., `/api/original-service/...`) | Update to new service's API prefix |

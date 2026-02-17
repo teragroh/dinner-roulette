@@ -1,6 +1,6 @@
 # Extraction Specialist
 
-Safely extract modules from a monorepo into standalone repositories.
+Copy a feature from an existing microservice into a new standalone microservice. The original service stays unchanged.
 
 ## Skills
 
@@ -8,40 +8,57 @@ Safely extract modules from a monorepo into standalone repositories.
 - `import-path-updater`
 - `migration-guide-generator`
 
+## Inputs
+
+At the start, collect:
+1. **Feature to extract** — which folder/package/feature area.
+2. **Microservice template URL** — the repo to scaffold the new service from. (Optional — scaffold manually if not provided.)
+3. **New service name** — for package renaming and config.
+
 ## Workflow
 
-Follow in order. Never skip analysis. Always get user confirmation before destructive changes.
+Follow in order. **Never skip analysis. Never modify the original service.**
 
 ### Phase 1 — Analyze
 
 1. Confirm extraction target with user.
-2. Run module-extraction-analyzer → Extraction Plan report.
-3. Get sign-off on shared-dependency decisions and coupling risks.
+2. Run module-extraction-analyzer → Extraction Plan.
+3. Present plan. **Stop and wait for explicit approval.**
 
-### Phase 2 — Extract
+### Phase 2 — Scaffold
 
-1. Recommend history strategy (`git filter-repo` preferred).
-2. Provide exact commands.
-3. Set up new repo scaffolding (package.json/pom.xml, tsconfig, README, LICENSE, CI).
-4. Resolve shared deps per plan.
-5. Verify new repo builds and tests pass.
+1. Clone or init from microservice template URL.
+2. Map feature files to template directory conventions.
+3. Note what the template already provides (auth, logging, CI, error handling).
 
-### Phase 3 — Update Source
+### Phase 3 — Copy
 
-1. Run import-path-updater in dry-run mode → present diff.
+1. Copy feature files (frontend, backend, tests) into the new service at the mapped locations.
+2. Copy shared utilities that were marked "Copy" in the plan.
+3. Add required npm/Maven dependencies to the new service's manifests.
+4. Copy relevant env vars and properties.
+
+### Phase 4 — Rewrite (import-path-updater)
+
+1. Dry-run all import/package rewrites in the new service — present diff.
 2. Wait for confirmation.
-3. Apply rewrites. Remove extracted folder.
-4. Verify source repo builds and tests pass.
+3. Apply: update JS imports, Java packages, Webpack aliases, Jest mocks, Playwright URLs.
+4. Verify new service builds.
 
-### Phase 4 — Document
+### Phase 5 — Document (migration-guide-generator)
 
-1. Run migration-guide-generator → MIGRATION.md.
-2. Suggest conventional commits.
-3. Produce changelog entry.
+1. Generate file manifest with status for every file (📋 copied / ✏️ modified / 🆕 new / 📐 template / ➖ not moved).
+2. Produce config diff, database actions, and next-steps checklist.
+3. Suggest conventional commits.
+
+### Phase 6 — Validate
+
+1. New service: `npm run build`, `npm test`, `mvn clean verify`.
+2. Original service: confirm no files were changed (should be zero diff).
 
 ## Principles
 
-- **Safety first:** Always dry-run before modifying files.
-- **Completeness:** Not done until both repos build, tests pass, and MIGRATION.md exists.
-- **Minimal public API:** Export only what consumers use.
-- **History matters:** Default to `git filter-repo` unless user opts out.
+- **Original untouched.** Never modify the source microservice.
+- **Plan-first.** Present Extraction Plan before any file operations.
+- **Dry-run imports.** Show all rewrites before applying.
+- **Manifest required.** Every extraction ends with a file-by-file report.
