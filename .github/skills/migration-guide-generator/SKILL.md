@@ -13,8 +13,8 @@ Gather from the extraction workflow:
 - Template URL (if used).
 - File manifest from the extraction (every file that was copied, created, or modified).
 - Import/path changes applied (from import-path-updater).
-- Config changes (env vars, properties, Webpack aliases).
-- Database changes (new tables, API boundaries).
+- Config changes (env vars, Webpack aliases).
+- Cleanup actions applied (if any).
 
 ### Workflow
 
@@ -41,12 +41,14 @@ Every file touched during extraction falls into one of these categories:
 ```
 feat(<new-service>): extract <feature> from <original-service>
 
-Copied <feature> frontend and backend code to new microservice
+Copied <feature> frontend code to new microservice
 scaffolded from <template>. Original service unchanged.
 
 chore(<new-service>): scaffold from microservice template
 
-refactor(<new-service>): update imports and packages for new service structure
+refactor(<new-service>): update imports and paths for new service structure
+
+chore(<new-service>): cleanup dead code and unused dependencies
 
 docs(<new-service>): add extraction manifest and setup guide
 ```
@@ -55,12 +57,11 @@ docs(<new-service>): add extraction manifest and setup guide
 
 Include in every report:
 
-- [ ] New service builds (`npm run build` / `mvn clean verify`)
+- [ ] New service builds (`npm run build`)
 - [ ] Jest tests pass in new service
 - [ ] Playwright tests pass against new service
-- [ ] Database migrations created for new service's tables
 - [ ] Environment variables configured in deployment
 - [ ] CI/CD pipeline configured (from template or new)
-- [ ] API gateway / routing updated to route to new service
+- [ ] Routing / proxy updated to serve new service
 - [ ] Team notified of new service location
 - [ ] Original service still builds and all tests pass (should be unchanged)

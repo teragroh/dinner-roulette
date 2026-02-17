@@ -1,69 +1,61 @@
-# Grep Patterns by Layer
+# Grep Patterns — Dependency Scanning
 
-Use these to scan imports and find dependencies in a Spring Boot + React (JS) + Webpack microservice.
+After discovering feature files (see discovery-strategies.md), use these to scan each file's imports and find what it depends on.
 
-## Frontend — React (JS/JSX)
+## JS/JSX — Imports and Exports
 
 ```bash
-# Imports in target feature
-grep -rn "from ['\"]" <target> --include="*.js" --include="*.jsx"
-grep -rn "require(" <target> --include="*.js" --include="*.jsx"
+# All imports in a specific file
+grep -n "from ['\"]" <file>
+grep -n "require(" <file>
 
-# Exports in target
-grep -rn "^export " <target> --include="*.js" --include="*.jsx"
-grep -rn "module\.exports" <target> --include="*.js"
-
-# Webpack aliases — check resolve.alias
-grep -rn "resolve" webpack.config.* --include="*.js"
-grep -rn "alias" webpack.config.* --include="*.js"
+# All exports
+grep -n "^export " <file>
+grep -n "module\.exports" <file>
 
 # CSS/SCSS imports
-grep -rn "@import\|@use\|url(" <target> --include="*.css" --include="*.scss"
+grep -n "@import\|@use\|url(" <file>
 ```
 
-## Backend — Spring Boot (Java)
+## Webpack Config
 
 ```bash
-# Imports in target package
-grep -rn "^import " <target> --include="*.java"
+# Aliases
+grep -n "alias" webpack.config.* --include="*.js"
 
-# Public API surface
-grep -rn "^public class\|^public interface\|^public enum" <target> --include="*.java"
-
-# Spring annotations (controller, service, repository, config)
-grep -rn "@RestController\|@Service\|@Repository\|@Configuration\|@Component" <target> --include="*.java"
-
-# JPA entities and table names
-grep -rn "@Entity\|@Table" <target> --include="*.java"
-
-# Property references
-grep -rn "@Value\|@ConfigurationProperties\|environment\.getProperty" <target> --include="*.java"
-
-# Shared across packages (reverse deps)
-grep -rn "import <target.package>" --include="*.java" | grep -v "<target>/"
+# Loaders referencing feature paths
+grep -n "include\|exclude\|test:" webpack.config.* --include="*.js" | grep -i "<feature>"
 ```
 
-## Tests
+## Jest
 
 ```bash
-# Jest test imports
-grep -rn "from ['\"]" <target> --include="*.test.js" --include="*.spec.js"
-grep -rn "jest\.mock(" <target> --include="*.test.js" --include="*.spec.js"
+# Mock paths (reveals real dependencies)
+grep -n "jest\.mock(" <file>
 
-# Playwright test references
-grep -rn "from ['\"]" <target> --include="*.spec.js" --include="*.test.js" | grep -i "playwright\|page\|test"
+# Module name mapper (in package.json or jest.config.js)
+grep -n "moduleNameMapper" package.json jest.config.*
 
-# Test fixtures and data
-grep -rn "require(\|from ['\"].*fixture\|from ['\"].*mock\|from ['\"].*stub" <target>
+# Snapshot file references
+find . -iname "*.snap" | xargs grep -l "<feature>"
 ```
 
-## Environment / Config
+## Playwright
 
 ```bash
-# Env vars in frontend
-grep -rn "process\.env\." <target> --include="*.js" --include="*.jsx"
+# Base URL / navigation references
+grep -n "baseURL\|goto\|navigate" <file>
 
-# Spring properties
-grep -rn "^\w" src/main/resources/application*.properties | grep -i "<feature-keyword>"
-grep -rn "^\w" src/main/resources/application*.yml | grep -i "<feature-keyword>"
+# Selectors referencing feature-specific elements
+grep -n "getByRole\|getByTestId\|getByText\|locator" <file> | grep -i "<feature>"
+```
+
+## Env / Config
+
+```bash
+# Frontend env vars in a specific file
+grep -n "process\.env\." <file>
+
+# Feature flags
+grep -n "feature.*flag\|toggle\|enabled\|isEnabled" <file>
 ```

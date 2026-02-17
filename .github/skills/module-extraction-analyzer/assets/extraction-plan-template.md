@@ -10,53 +10,66 @@
 
 ---
 
-### Files to Copy
+### Discovered Feature Files
 
-#### Frontend (React JS)
-| File | Target location in new service |
-|------|-------------------------------|
-| `<src/path/Component.jsx>` | `<template-mapped-path>` |
+> These files were identified via codebase research. They are scattered across the project, not in a single folder.
 
-#### Backend (Spring Boot)
-| File | Target location in new service |
-|------|-------------------------------|
-| `<src/main/java/.../Controller.java>` | `<template-mapped-path>` |
+#### Pages / Routes
+| File | Current location | Target location in new service |
+|------|-----------------|-------------------------------|
+| `<Page.jsx>` | `src/pages/scheduling/SchedulePage.jsx` | `<template-mapped-path>` |
+
+#### Components
+| File | Current location | Target location in new service |
+|------|-----------------|-------------------------------|
+| `<Component.jsx>` | `src/components/calendar/CalendarView.jsx` | `<template-mapped-path>` |
+
+#### Hooks
+| File | Current location | Target location in new service |
+|------|-----------------|-------------------------------|
+| `<hook.js>` | `src/hooks/useSchedule.js` | `<template-mapped-path>` |
+
+#### API / Data
+| File | Current location | Target location in new service |
+|------|-----------------|-------------------------------|
+| `<api.js>` | `src/api/scheduleApi.js` | `<template-mapped-path>` |
+| `<slice.js>` | `src/store/scheduleSlice.js` | `<template-mapped-path>` |
+
+#### Styles
+| File | Current location | Target location in new service |
+|------|-----------------|-------------------------------|
+| `<styles.css>` | `src/pages/scheduling/schedule.css` | `<template-mapped-path>` |
 
 #### Tests
-| File | Type | Target location |
-|------|------|----------------|
-| `<Component.test.js>` | Jest | `<path>` |
-| `<feature.spec.js>` | Playwright | `<path>` |
+| File | Current location | Type | Target location |
+|------|-----------------|------|----------------|
+| `<test.js>` | `src/components/calendar/__tests__/CalendarView.test.js` | Jest | `<path>` |
+| `<spec.js>` | `e2e/scheduling.spec.js` | Playwright | `<path>` |
 
 #### Config / Environment
-| Item | Type | Value / Notes |
-|------|------|--------------|
-| `<ENV_VAR>` | env var | Required in new service |
-| `<property.key>` | Spring property | Copy to new application.properties |
-| `<webpack alias>` | Webpack | Add to new webpack.config.js |
+| Item | Current location | Type | Value / Notes |
+|------|-----------------|------|--------------|
+| `<ENV_VAR>` | `.env` | env var | Required in new service |
+| `<webpack alias>` | `webpack.config.js` | Webpack | Replicate in new service |
 
 ---
 
-### Required Dependencies
+### Required Dependencies (npm)
 
-#### npm (package.json)
 | Package | Version | Notes |
 |---------|---------|-------|
 | `<pkg>` | `<ver>` | |
-
-#### Maven (pom.xml)
-| GroupId | ArtifactId | Version |
-|--------|-----------|---------|
-| `<group>` | `<artifact>` | `<ver>` |
 
 ---
 
 ### Shared Code Decisions
 
-| File | LOC | Used by this feature | Also used by | Decision |
-|------|-----|---------------------|-------------|----------|
-| `<shared/utils.js>` | 30 | 3 files | 2 other features | Copy (small) |
-| `<common/ApiClient.java>` | 200 | 5 files | 4 other features | Copy + adapt / Shared lib |
+> These files are used by the feature AND by other parts of the original service.
+
+| File | Current location | LOC | Used by this feature | Also used by | Decision |
+|------|-----------------|-----|---------------------|-------------|----------|
+| `<utils.js>` | `src/shared/utils.js` | 30 | 3 feature files | 2 other features | Copy (small) |
+| `<ApiClient.js>` | `src/api/apiClient.js` | 200 | 5 feature files | 4 other features | Copy + adapt |
 
 ---
 
@@ -66,22 +79,24 @@
 
 ---
 
-### Database Considerations
-
-| Table | Owned by feature? | Shared? | Action |
-|-------|--------------------|---------|--------|
-| `<table>` | Yes | No | Create in new service DB |
-| `<table>` | No | Yes — also used by `<other>` | New service calls original via API |
-
----
-
 ### Template Mapping
 
 | Template provides | Feature needs | Status |
 |-------------------|--------------|--------|
-| Auth boilerplate | Auth filter | ✅ Use template's |
-| Error handling | Custom error handler | ⚠️ Merge needed |
+| Auth boilerplate | Auth context/HOC | ✅ Use template's |
+| Error boundary | Custom error handler | ⚠️ Merge needed |
 | CI pipeline | CI pipeline | ✅ Use template's |
+
+---
+
+### Optional: Cleanup Candidates
+
+> Dead code, unused imports, and unnecessary dependencies that can be removed from the copied files.
+
+| File | Cleanup action | Reason |
+|------|---------------|--------|
+| `<utils.js>` | Remove 3 unused functions | Only `formatDate()` is used by this feature |
+| `<Component.jsx>` | Remove feature-flag check | Feature is always on in new service |
 
 ---
 

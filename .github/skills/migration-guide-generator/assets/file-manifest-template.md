@@ -14,38 +14,46 @@
 
 ## File Manifest
 
-### Frontend (React JS)
+### Pages / Routes
 
 | Status | File (original) | File (new service) | Changes |
 |--------|----------------|-------------------|---------|
-| 📋 | `src/features/X/Component.jsx` | `src/features/X/Component.jsx` | None |
-| ✏️ | `src/features/X/api.js` | `src/features/X/api.js` | Updated API base URL |
-| 🆕 | — | `src/config/newService.js` | New config for service |
-| 📐 | — | `src/App.jsx` | From template |
+| 📋 | `src/pages/feature/Page.jsx` | `src/pages/feature/Page.jsx` | None |
 
-### Backend (Spring Boot)
+### Components
 
 | Status | File (original) | File (new service) | Changes |
 |--------|----------------|-------------------|---------|
-| ✏️ | `src/.../FeatureController.java` | `src/.../FeatureController.java` | Package renamed |
-| ✏️ | `src/.../FeatureService.java` | `src/.../FeatureService.java` | Package renamed |
-| 📋 | `src/.../FeatureDTO.java` | `src/.../FeatureDTO.java` | None |
-| 📐 | — | `src/.../Application.java` | From template |
+| 📋 | `src/components/Feature.jsx` | `src/components/Feature.jsx` | None |
+| ✏️ | `src/components/FeatureForm.jsx` | `src/components/FeatureForm.jsx` | Updated API import path |
+
+### Hooks / API / Data
+
+| Status | File (original) | File (new service) | Changes |
+|--------|----------------|-------------------|---------|
+| ✏️ | `src/api/featureApi.js` | `src/api/featureApi.js` | Updated API base URL |
+| ✏️ | `src/hooks/useFeature.js` | `src/hooks/useFeature.js` | Updated import paths |
+
+### Styles
+
+| Status | File (original) | File (new service) | Changes |
+|--------|----------------|-------------------|---------|
+| 📋 | `src/pages/feature/feature.css` | `src/pages/feature/feature.css` | None |
 
 ### Tests
 
 | Status | File (original) | File (new service) | Changes |
 |--------|----------------|-------------------|---------|
-| ✏️ | `src/.../Component.test.js` | `src/.../Component.test.js` | Updated mock paths |
+| ✏️ | `src/components/__tests__/Feature.test.js` | `src/components/__tests__/Feature.test.js` | Updated mock paths |
 | ✏️ | `e2e/feature.spec.js` | `e2e/feature.spec.js` | Updated base URL |
 
 ### Configuration
 
 | Status | Item | Type | Changes |
 |--------|------|------|---------|
-| ✏️ | `application.properties` | Spring | Added feature properties, new DB URL |
 | ✏️ | `webpack.config.js` | Webpack | Added aliases for feature paths |
 | 🆕 | `.env` | Environment | New env vars for service |
+| 📐 | `package.json` | npm | From template + feature deps added |
 | 📐 | `Dockerfile` | Docker | From template |
 | 📐 | `Jenkinsfile` / `.github/workflows` | CI | From template |
 
@@ -54,16 +62,15 @@
 | Status | File | Decision | Notes |
 |--------|------|----------|-------|
 | 📋 | `shared/utils.js` | Copied (30 LOC) | Small utility, acceptable duplication |
-| ➖ | `common/AuthClient.java` | Not copied | New service calls original via API |
+| ➖ | `shared/authContext.js` | Not copied | New service uses template's auth |
 
----
+### Cleanup Applied
 
-## Database
-
-| Table | Action | Notes |
-|-------|--------|-------|
-| `<feature_table>` | Created in new service DB | Migration script: `V1__create_feature_table.sql` |
-| `<shared_table>` | Not copied | Accessed via API to original service |
+| File | Action | Detail |
+|------|--------|--------|
+| `shared/utils.js` | Trimmed | Removed 3 unused functions, kept `formatDate()` |
+| `components/FeatureForm.jsx` | Simplified | Removed feature-flag conditional |
+| `package.json` | Pruned | Removed 4 unused dependencies |
 
 ---
 
@@ -71,20 +78,18 @@
 
 | Key | Original service | New service |
 |-----|-----------------|-------------|
-| `API_BASE_URL` | `/api/original` | `/api/new-service` |
-| `DB_URL` | `jdbc:...original_db` | `jdbc:...new_db` |
-| `<FEATURE_ENV_VAR>` | `value` | `value` (same) |
+| `REACT_APP_API_URL` | `/api/original` | `/api/new-service` |
+| `REACT_APP_FEATURE_FLAG` | `true` | Removed (always on) |
 
 ---
 
 ## Next Steps
 
-- [ ] New service builds (`npm run build` / `mvn clean verify`)
-- [ ] Jest tests pass
+- [ ] New service builds (`npm run build`)
+- [ ] Jest tests pass (`npm test`)
 - [ ] Playwright tests pass against new service
-- [ ] Database migrations applied
 - [ ] Env vars configured in deployment
 - [ ] CI/CD pipeline running
-- [ ] API gateway routing updated
+- [ ] Routing / proxy updated to serve new service
 - [ ] Team notified
 - [ ] Original service verified unchanged
